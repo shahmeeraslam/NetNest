@@ -48,15 +48,14 @@ class VendorService extends Model
     */
 
     // VendorService belongs to a User (vendor)
-    public function user()
+     public function vendor()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
-    // VendorService has many customer subscriptions
     public function subscriptions()
     {
-        return $this->hasMany(CustomerSubscription::class);
+        return $this->hasMany(CustomerSubscription::class, 'vendor_service_id');
     }
 
     /*

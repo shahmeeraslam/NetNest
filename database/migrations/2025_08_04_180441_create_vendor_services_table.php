@@ -33,7 +33,6 @@ return new class extends Migration
             $table->json('faqs')->nullable();        // array of { question, answer }
             $table->json('images')->nullable();      // array of image paths
             $table->json('speed_details')->nullable(); // array of string (or convert to structured JSON later)
-
             $table->string('coverage_area');
             $table->boolean('is_active')->default(true);
 

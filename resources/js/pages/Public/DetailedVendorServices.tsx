@@ -10,6 +10,7 @@ import { Head, usePage } from '@inertiajs/react';
 
 import Layout from '@/layouts/layout';
 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PageProps } from '@/types';
 import { BarChartIcon, MapPinIcon, ServerIcon, StarIcon, TrendingUpIcon, UsersIcon } from 'lucide-react';
 
@@ -145,45 +146,71 @@ export default function DetailedVendorServices() {
                 </div>
 
                 {/* Right Column (Sticky Pricing Card) */}
-                <div className="relative space-y-4 lg:col-span-4">
-                    <div className="sticky top-24">
-                        <Card className="overflow-hidden p-0">
-                            <CardHeader className="p-0">
-                                {vendor.images?.length > 0 ? (
-                                    <img src={`/storage/${vendor.images[0]}`} alt={vendor.title} className="h-48 w-full object-cover" />
-                                ) : (
-                                    <div className="flex h-48 w-full items-center justify-center bg-muted">
-                                        <ServerIcon className="h-12 w-12 text-muted-foreground" />
-                                    </div>
-                                )}
-                            </CardHeader>
-                            <CardContent className="space-y-4 p-5">
-                                {vendor.packages.map((pkg, index) => (
-                                    <Card key={index} className="mb-4">
-                                        <CardHeader>
-                                            <Typography variant="xl/bold">{pkg.name} Package</Typography>
-                                        </CardHeader>
-                                        <CardContent className="space-y-2">
-                                            <div className="text-xl font-bold">{pkg.price} PKR</div>
-                                            <Typography variant="sm/normal" className="text-muted-foreground">
-                                                {pkg.billing_cycle} billing
-                                            </Typography>
-                                            {pkg.speed_label && <Typography>{pkg.speed_label}</Typography>}
-                                            <ul className="list-disc pl-5 text-muted-foreground">
-                                                {pkg.features.map((feature, i) => (
-                                                    <li key={i}>{feature}</li>
-                                                ))}
-                                            </ul>
-                                            <Button className="w-full">Subscribe Now</Button>
-                                        </CardContent>
-                                    </Card>
-                                ))}
+                {/* Right Column (Sticky Pricing Card) */}
+<div className="relative space-y-4 lg:col-span-4">
+  <div className="sticky top-24">
+    <Card className="overflow-hidden p-0">
+      <CardHeader className="p-0">
+        {vendor.images?.length > 0 ? (
+          <img
+            src={`/storage/${vendor.images[0]}`}
+            alt={vendor.title}
+            className="h-48 w-full object-cover"
+          />
+        ) : (
+          <div className="flex h-48 w-full items-center justify-center bg-muted">
+            <ServerIcon className="h-12 w-12 text-muted-foreground" />
+          </div>
+        )}
+      </CardHeader>
 
-                                <Button className="w-full">Subscribe Now</Button>
-                            </CardContent>
-                        </Card>
-                    </div>
-                </div>
+      <CardContent className="space-y-4 p-5">
+        <Tabs defaultValue={vendor.packages[0]?.name.toLowerCase()} className="w-full">
+          
+          {/* Tab Buttons */}
+          <TabsList className="grid grid-cols-3 w-full border rounded-md mb-4">
+            {vendor.packages.map((pkg) => (
+              <TabsTrigger 
+                key={pkg.name}
+                value={pkg.name.toLowerCase()}
+                className="capitalize"
+              >
+                <Button variant={'outline'}>                  
+                {pkg.name}
+                </Button>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          {/* Tab Contents */}
+          {vendor.packages.map((pkg) => (
+            <TabsContent key={pkg.name} value={pkg.name.toLowerCase()}>
+              <Card>
+                <CardHeader>
+                  <Typography variant="xl/bold">{pkg.name} Package</Typography>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="text-xl font-bold">{pkg.price} PKR</div>
+                  <Typography variant="sm/normal" className="text-muted-foreground">
+                    {pkg.billing_cycle} billing
+                  </Typography>
+                  {pkg.speed_label && <Typography>{pkg.speed_label}</Typography>}
+                  <ul className="list-disc pl-5 text-muted-foreground">
+                    {pkg.features.map((feature, i) => (
+                      <li key={i}>{feature}</li>
+                    ))}
+                  </ul>
+                  <Button className="w-full">Subscribe Now</Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          ))}
+          
+        </Tabs>
+      </CardContent>
+    </Card>
+  </div>
+</div>
             </div>
         </Layout>
     );
