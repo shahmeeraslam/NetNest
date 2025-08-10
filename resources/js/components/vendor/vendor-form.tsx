@@ -9,31 +9,34 @@ import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { useForm } from '@inertiajs/react';
 import React from 'react';
+import { RichEditor } from '../editor/rich-editor';
 
 export default function VendorForm() {
     const { data, setData, post, processing, errors, reset } = useForm({
         title: '',
-        vendor_name: '',
-        logo: null as File | null,
         location: '',
         connection_type: 'fiber',
-        price: '',
-        billing_cycle: 'Monthly',
         short_description: '',
         full_description: '',
         highlight: 'undefined',
         features: '',
         faqs: '',
         images: [] as File[],
+        speed_details: '',
+        coverage_area: '',
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Handle JSON and array transformations before submission
         const featuresArray = data.features
             .split(',')
             .map((f) => f.trim())
+            .filter(Boolean);
+
+        const speedDetailsArray = data.speed_details
+            .split(',')
+            .map((s) => s.trim())
             .filter(Boolean);
 
         let faqsObject = [];
@@ -44,10 +47,10 @@ export default function VendorForm() {
             return;
         }
 
-        // The post method handles FormData creation automatically with `forceFormData: true`
         post(route('submission.store'), {
             ...data,
             features: JSON.stringify(featuresArray),
+            speed_details: JSON.stringify(speedDetailsArray),
             faqs: JSON.stringify(faqsObject),
             forceFormData: true,
             preserveScroll: true,
@@ -72,31 +75,12 @@ export default function VendorForm() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="vendor_name">Vendor Name</Label>
-                                <Input
-                                    id="vendor_name"
-                                    name="vendor_name"
-                                    value={data.vendor_name}
-                                    onChange={(e) => setData('vendor_name', e.target.value)}
-                                />
-                                {errors.vendor_name && <p className="text-sm text-red-500">{errors.vendor_name}</p>}
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="logo">Logo</Label>
-                                <Input id="logo" name="logo" type="file" onChange={(e) => setData('logo', e.target.files?.[0] || null)} />
-                                {errors.logo && <p className="text-sm text-red-500">{errors.logo}</p>}
-                            </div>
-
-                            <div className="space-y-2">
                                 <Label htmlFor="location">Location</Label>
                                 <Input id="location" name="location" value={data.location} onChange={(e) => setData('location', e.target.value)} />
                                 {errors.location && <p className="text-sm text-red-500">{errors.location}</p>}
                             </div>
                         </div>
-
                         <Separator />
-
                         {/* Technical Info */}
                         <div className="space-y-6">
                             <div className="space-y-2">
@@ -115,29 +99,28 @@ export default function VendorForm() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="price">Price (PKR)</Label>
-                                <Input id="price" name="price" type="number" value={data.price} onChange={(e) => setData('price', e.target.value)} />
-                                {errors.price && <p className="text-sm text-red-500">{errors.price}</p>}
+                                <Label htmlFor="speed_details">Speed Details (comma separated)</Label>
+                                <Input
+                                    id="speed_details"
+                                    name="speed_details"
+                                    value={data.speed_details}
+                                    onChange={(e) => setData('speed_details', e.target.value)}
+                                />
+                                {errors.speed_details && <p className="text-sm text-red-500">{errors.speed_details}</p>}
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="billing_cycle">Billing Cycle</Label>
-                                <Select value={data.billing_cycle} onValueChange={(value) => setData('billing_cycle', value)}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select a billing cycle" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="Monthly">Monthly</SelectItem>
-                                        <SelectItem value="Quarterly">Quarterly</SelectItem>
-                                        <SelectItem value="Yearly">Yearly</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                {errors.billing_cycle && <p className="text-sm text-red-500">{errors.billing_cycle}</p>}
+                                <Label htmlFor="coverage_area">Coverage Area</Label>
+                                <Textarea
+                                    id="coverage_area"
+                                    name="coverage_area"
+                                    value={data.coverage_area}
+                                    onChange={(e) => setData('coverage_area', e.target.value)}
+                                />
+                                {errors.coverage_area && <p className="text-sm text-red-500">{errors.coverage_area}</p>}
                             </div>
                         </div>
-
                         <Separator />
-
                         {/* Descriptions */}
                         <div className="space-y-6">
                             <div className="space-y-2">
@@ -151,7 +134,7 @@ export default function VendorForm() {
                                 {errors.short_description && <p className="text-sm text-red-500">{errors.short_description}</p>}
                             </div>
 
-                            <div className="space-y-2">
+                            {/* <div className="space-y-2">
                                 <Label htmlFor="full_description">Full Description</Label>
                                 <Textarea
                                     id="full_description"
@@ -161,11 +144,14 @@ export default function VendorForm() {
                                     rows={5}
                                 />
                                 {errors.full_description && <p className="text-sm text-red-500">{errors.full_description}</p>}
-                            </div>
+                            </div> */}
                         </div>
 
                         <Separator />
 
+                        <RichEditor value={data.full_description} onChange={(html) => setData('full_description', html)} />
+
+                        <Separator />
                         {/* Extras */}
                         <div className="space-y-6">
                             <div className="space-y-2">
@@ -209,7 +195,6 @@ export default function VendorForm() {
                                 {errors.images && <p className="text-sm text-red-500">{errors.images}</p>}
                             </div>
                         </div>
-
                         <div className="flex justify-end pt-4">
                             <Button type="submit" disabled={processing}>
                                 Submit Service
