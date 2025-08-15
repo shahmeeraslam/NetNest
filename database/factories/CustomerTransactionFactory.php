@@ -19,7 +19,7 @@ class CustomerTransactionFactory extends Factory
             'payment_date' => now()->subDays(rand(1, 30)),
             'payment_method' => $this->faker->randomElement(['credit_card', 'paypal', 'bank_transfer']),
             'transaction_reference' => strtoupper($this->faker->bothify('TXN####??')),
-            'status' => $this->faker->randomElement(['paid', 'failed', 'pending']),
+            'status' => $this->faker->randomElement(['pending', 'completed', 'failed', 'refunded']),
         ];
     }
 }

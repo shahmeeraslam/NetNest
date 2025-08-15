@@ -12,25 +12,24 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('customer_transactions', function (Blueprint $table) {
-    $table->id();
+            $table->id();
 
-    // Links payment to a subscription
-    $table->foreignId('customer_subscription_id')
-          ->constrained()
-          ->cascadeOnDelete();
+            // Links payment to a subscription
+            $table->foreignId('customer_subscription_id')
+                ->constrained()
+                ->cascadeOnDelete();
 
-    $table->decimal('amount', 10, 2);
-    $table->string('currency', 3)->default('USD'); // optional
+            $table->decimal('amount', 10, 2);
+            $table->string('currency', 3)->default('USD'); // optional
 
-    $table->dateTime('payment_date');
-    $table->string('payment_method')->nullable(); // e.g., 'credit_card', 'paypal'
-    $table->string('transaction_reference')->nullable(); // from payment gateway
+            $table->dateTime('payment_date');
+            $table->string('payment_method')->nullable(); // e.g., 'credit_card', 'paypal'
+            $table->string('transaction_reference')->nullable(); // from payment gateway
 
-    $table->enum('status', ['pending', 'completed', 'failed', 'refunded'])->default('pending');
+            $table->enum('status', ['pending', 'completed', 'failed', 'refunded'])->default('pending');
 
-    $table->timestamps();
-});
-
+            $table->timestamps();
+        });
     }
 
     /**
@@ -38,6 +37,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('customer_transactions');
     }
 };

@@ -11,6 +11,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+// import { AlertDialogContent } from '@radix-ui/react-alert-dialog';
+// import { AlertDialog, AlertDialogTrigger } from '@radix-ui/react-alert-dialog';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -25,9 +28,9 @@ type ProfileForm = {
 };
 
 export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: boolean; status?: string }) {
-    const { auth } = usePage<SharedData>().props;
+    const { auth, success, error: errormassage } = usePage<SharedData>().props as any;
 
-    const { data, setData, patch, errors, processing, recentlySuccessful } = useForm<Required<ProfileForm>>({
+    const { data, setData, patch, post, errors, processing, recentlySuccessful } = useForm<Required<ProfileForm>>({
         name: auth.user.name,
         email: auth.user.email,
     });
@@ -38,6 +41,11 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
         patch(route('profile.update'), {
             preserveScroll: true,
         });
+    };
+
+    const vendorRequest = (e: React.FormEvent) => {
+        e.preventDefault();
+        post(route('customer.request'));
     };
 
     return (
@@ -66,7 +74,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="email">Email address</Label>
+                            <Label htmlFor="email">Email</Label>
 
                             <Input
                                 id="email"
@@ -119,6 +127,49 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                         </div>
                     </form>
                 </div>
+                {auth.user.role == 'customer' && (
+                    <div className="flex w-fit flex-col gap-1.5">
+                        <HeadingSmall title="Want To Be Vendor" description="If You Want To List Your Service Request To Be  A Vendor" />
+                            <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="outline">Show Dialog</Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete your
+            account and remove your data from our servers.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction>    <form onSubmit={vendorRequest}>
+                        {/* Hidden since backend uses Auth::user() */}
+                        <input type="hidden" name="email" value={data.email} />
+
+                        <Button type="submit" disabled={processing}>
+                            {processing ? 'Sending...' : 'Request'}
+                        </Button>
+
+                        <InputError message={errors.email} className="mt-2" />
+                    </form>
+                    </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+                    </div>
+                )}
+{/* 
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                         <Button variant="outline">Request</Button>
+                    </AlertDialogTrigger>;
+                </AlertDialog> */}
+
+             
+  
+
 
                 <DeleteUser />
             </SettingsLayout>
