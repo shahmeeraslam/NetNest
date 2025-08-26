@@ -1,21 +1,9 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { router } from '@inertiajs/react';
-import { AlertDescription } from '../ui/alert';
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from '../ui/alert-dialog';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Typography } from '../ui/typography';
 
-interface CustomerRequestType {
+interface customerRequest {
     data: {
         user_id: string;
         email: string;
@@ -35,7 +23,7 @@ export function CustomerRequest({
     onPageChange,
     classname,
 }: {
-    customerRequest: CustomerRequestType;
+    customerRequest: customerRequest;
     onPageChange: (url: string | null) => void;
     classname: string;
 }) {
@@ -62,7 +50,7 @@ export function CustomerRequest({
                                 <AvatarFallback>
                                     {cr.name
                                         .split(' ')
-                                        .map((n: string) => n[0])
+                                        .map((n: any) => n[0])
                                         .join('')
                                         .toUpperCase()
                                         .slice(0, 2)}
@@ -71,42 +59,14 @@ export function CustomerRequest({
                             <div>
                                 <CardTitle>{cr.name}</CardTitle>
                                 <CardDescription>{cr.email}</CardDescription>
-                                <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                        <Button variant="link">{cr.role}</Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle>Are you absolutely sure you want to change {cr.name} to vendor?</AlertDialogTitle>
-                                            <AlertDescription>ok fine {cr.name}</AlertDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                            <AlertDialogAction
-                                                onClick={() => {
-                                                    router.patch(
-                                                        route('admin.users.updateRole'),
-                                                        { user_id: cr.user_id , role: 'vendor'},
-                                                        { preserveScroll: true, onSuccess: () => router.reload() },
-                                                    );
-                                                }}
-                                            >
-                                                Accept
-
-
-                                            </AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
                             </div>
-                          
                         </CardHeader>
                     </CardContent>
                 </Card>
             ))}
 
             {/* Pagination */}
-            {customerRequest.links.length > 0 && (
+            {customerRequest && customerRequest.links.length > 0 && (
                 <div className="mt-3 flex flex-wrap justify-center gap-2 px-4">
                     {customerRequest.links.map((link, index) => (
                         <Button

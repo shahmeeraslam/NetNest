@@ -3,10 +3,11 @@ import { ReactNode } from 'react';
 
 import { siteConfig } from '../../config/site';
 import { cn } from '../../lib/utils';
-import { Button, type ButtonProps } from '../ui/button';
+import { Button } from '../ui/button';
 import { Navbar as NavbarComponent, NavbarLeft, NavbarRight } from '../ui/navbar';
 
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
+import { ButtonVariants } from '@/types';
 import { Link, router } from '@inertiajs/react';
 import Navigation from '../ui/navigation';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
@@ -19,7 +20,7 @@ interface NavbarLink {
 interface NavbarActionProps {
     text: string;
     href: string;
-    variant?: ButtonProps['variant'];
+    variant?: ButtonVariants;
     icon?: ReactNode;
     iconRight?: ReactNode;
     isButton?: boolean;
@@ -49,10 +50,11 @@ interface NavbarLink {
 interface NavbarActionProps {
     text: string;
     href: string;
-    variant?: ButtonProps['variant'];
+    variant?: ButtonVariants;
     icon?: ReactNode;
     iconRight?: ReactNode;
     isForm?: boolean;
+    isProfile?: boolean;
     isButton?: boolean;
 }
 
@@ -89,7 +91,7 @@ export default function Navbar({
                 roleBasedLinks = [
                     { text: 'Dashboard', href: '/admin/dashboard' },
                     { text: 'Users', href: '/admin/users' },
-                    { text: 'Plans', href: '/admin/plans' },
+                    // { text: 'Plans', href: '/admin/plans' },
                     { text: 'Billing', href: '/admin/billing' },
                     { text: 'CMS', href: '/admin/cms' },
                 ];
@@ -107,10 +109,10 @@ export default function Navbar({
             case 'customer':
                 roleBasedLinks = [
                     { text: 'Dashboard', href: '/customer/dashboard' },
-                    { text: 'My Plans', href: '/customer/plans' },
-                    { text: 'Billing', href: '/customer/billing' },
-                    { text: 'Support', href: '/customer/support' },
-                    { text: 'Vendors', href: '/vendors' }, // Customer view of vendors
+                    { text: 'Services', href: '/services' },
+                    { text: 'Billings', href: '/customer/billing' },
+                    { text: 'Subscription ', href: '/customer/subscription-management' },
+                    // { text: 'Support', href: '/customer/support' },
                 ];
                 break;
         }
@@ -120,7 +122,7 @@ export default function Navbar({
                 actions = [
                     {
                         text: 'Dashboard',
-                        href: '/dashboard',
+                        href: '/admin/dashboard',
                         isButton: true,
                         variant: 'secondary',
                     },
@@ -154,9 +156,9 @@ export default function Navbar({
             case 'customer':
                 actions = [
                     {
-                        text: 'Logout',
-                        href: '/logout',
-                        isForm: true,
+                        text: 'Profile',
+                        href: '/settings/profile',
+                        isProfile: true,
                         isButton: true,
                         variant: 'default',
                     },
@@ -167,8 +169,9 @@ export default function Navbar({
         // Guest
         roleBasedLinks = [
             { text: 'Home', href: '/' },
-            { text: 'Plans', href: '/plans' },
-            { text: 'Vendors', href: '/vendors' },
+            // { text: 'Plans', href: '/plans' },
+            { text: 'Services', href: '/services' },
+            { text: 'About', href: '/about' },
             { text: 'Contact', href: '/contact' },
         ];
 
@@ -190,8 +193,7 @@ export default function Navbar({
     };
 
     return (
-        <header className={cn('sticky top-0 z-50 -mb-4 px-4 pb-4', className)}>
-            <div className="fade-bottom absolute left-0 h-24 w-full bg-background/15 backdrop-blur-lg"></div>
+        <header className={cn('sticky top-0 z-50 -mb-4 px-4 pb-4', 'fade-bottom bg-background/80 backdrop-blur-lg', className)}>
             <div className="max-w-container relative mx-auto">
                 <NavbarComponent>
                     <NavbarLeft>
@@ -203,14 +205,24 @@ export default function Navbar({
                     </NavbarLeft>
                     <NavbarRight>
                         {actions.map((action, index) =>
-                            action.isForm && action.isButton ? (
+                            action.isProfile && action.isButton ? (
                                 <Button key={index} variant={action.variant || 'default'} className="text-center" asChild>
-                                    <Link className="block w-full" method="post" href={route('logout')} as="button" onClick={handleLogout}>
-                                        {action.icon}
-                                        {action.text}
-                                        {action.iconRight}
-                                    </Link>
+                                    <Link href={action.href}>{action.text}</Link>
                                 </Button>
+                            ) : action.isForm && action.isButton ? (
+                                <Link
+                                    className={cn(
+                                        "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+                                        'h-9 px-4 py-2 has-[>svg]:px-3',
+                                        'bg-primary text-primary-foreground shadow-xs hover:bg-primary/90',
+                                    )}
+                                    method="post"
+                                    href={route('logout')}
+                                    as="button"
+                                    onClick={handleLogout}
+                                >
+                                    Log out
+                                </Link>
                             ) : action.isButton ? (
                                 <Button key={index} variant={action.variant || 'default'} className="text-center" asChild>
                                     <Link href={action.href}>

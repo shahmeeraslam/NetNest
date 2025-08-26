@@ -1,10 +1,21 @@
 import { PageProps as InertiaPageProps } from '@inertiajs/inertia';
 import { LucideIcon } from 'lucide-react';
 import type { Config } from 'ziggy-js';
+import { Cms, CmsYes, Seo } from './cms';
 
 //Layouts
 export interface LayoutProps {
     children: ReactNode;
+    title: string;
+    // role?: 'customer' | 'vendor' | 'admin' | null;
+    breadcrumbs?: BreadcrumbItem[];
+    [type: string]: value;
+}
+
+export interface AppLayoutProps {
+    children: ReactNode;
+    title?: string;
+    breadcrumbs?: BreadcrumbItem[];
 }
 
 export interface Auth {
@@ -46,20 +57,29 @@ export interface User {
     email_verified_at: string | null;
     created_at: string;
     updated_at: string;
-    [key: string]: unknown; // This allows for additional properties...
+    [key: string]: unknown;
 }
 
 export interface PageProps extends InertiaPageProps {
     auth: {
         user?: User | null;
     };
+    seo : Seo[] ;
+    customerServices: VendorService[];
+    subsByService: CustomerSubscription[];
+    flash: { success?: string; error?: string };
+    CmsProp: Cms[] | undefined;
+    cms: CmsYes;
+    marquee: [
+        {
+            marquee_text: string;
+            marquee_link: string;
+        },
+    ];
     [key: string]: any;
 }
 
 // Vendors
-export type ConnectionType = 'fiber' | 'dsl' | 'wireless';
-export type BillingCycle = 'Monthly' | 'Quarterly' | 'Yearly';
-export type HighlightType = 'new' | 'trending' | 'reliable' | 'popular' | 'undefined';
 
 export interface Vendor {
     question: string;
@@ -70,6 +90,10 @@ export interface VendorFAQ {
     answer: string;
 }
 
+export type ConnectionType = 'fiber' | 'dsl' | 'wireless';
+export type BillingCycle = 'Monthly' | 'Quarterly' | 'Yearly';
+export type HighlightType = 'new' | 'trending' | 'reliable' | 'popular' | 'undefined';
+
 export interface VendorServicePackage {
     name: 'Basic' | 'Standard' | 'Premium';
     price: number;
@@ -77,6 +101,7 @@ export interface VendorServicePackage {
     speed_label?: string; // "100 Mbps", optional
     features: string[];
     description?: string;
+    currency: string;
     is_popular?: boolean;
 }
 
@@ -95,15 +120,7 @@ export interface VendorService {
     short_description: string;
     full_description: string;
 
-    packages: {
-        name: 'Basic' | 'Standard' | 'Premium';
-        price: number;
-        billing_cycle: BillingCycle;
-        speed_label?: string; // "100 Mbps", optional
-        features: string[];
-        description?: string;
-        is_popular?: boolean;
-    }[];
+    packages: VendorServicePackage[];
 
     features: string[];
     faqs: VendorFAQ[];
@@ -115,4 +132,41 @@ export interface VendorService {
 
     created_at: string;
     updated_at: string;
+
+    [key: string]: unknown;
 }
+
+// User Transactions
+
+export interface UserTransaction {
+    customer_subscription_id: string;
+    amount: number;
+    currency: string;
+    payment_date: Date;
+    payment_method?: string;
+    transaction_reference?: string;
+    status: 'pending' | 'completed' | 'failed' | 'refunded';
+
+    created_at: string;
+    updated_at: string;
+
+    [key: string]: unknown;
+}
+
+// Customer Subscription
+export interface CustomerSubscription {
+    user_id: string;
+    vendor_service_id: string;
+    subscribed_at: Date;
+    next_billing_date: Date;
+    package_name: ['Basic' | 'Standard' | 'Premium'];
+    status: ['active' | 'cancelled' | 'expired'];
+
+    created_at: string;
+    updated_at: string;
+
+    [key: string]: unknown;
+}
+
+// Button varaints
+export type ButtonVariants = 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';

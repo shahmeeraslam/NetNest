@@ -1,6 +1,3 @@
-'use client';
-
-import { IconInnerShadowTop } from '@tabler/icons-react';
 import * as React from 'react';
 
 import { NavDocuments } from '@/components/nav-documents';
@@ -22,9 +19,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
-                            <a href="#">
-                                <IconInnerShadowTop className="!size-5" />
-                                <span className="text-base font-semibold">Acme Inc.</span>
+                            <a href="/">
+                                <span className="text-base font-semibold">Net Nest</span>
                             </a>
                         </SidebarMenuButton>
                     </SidebarMenuItem>

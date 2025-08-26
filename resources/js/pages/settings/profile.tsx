@@ -1,19 +1,27 @@
-import { type BreadcrumbItem, type SharedData } from '@/types';
+import { BreadcrumbItem, type SharedData } from '@/types';
 import { Transition } from '@headlessui/react';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { Link, router, useForm, usePage } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+
+// import { AlertDialogContent } from '@radix-ui/react-alert-dialog
 import DeleteUser from '@/components/delete-user';
 import HeadingSmall from '@/components/heading-small';
 import InputError from '@/components/input-error';
+import ConditionalLayout from '@/components/layout/conditionalLayout';
+import LogoutSection from '@/components/logout-user';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import AppLayout from '@/layouts/app-layout';
+import { Separator } from '@/components/ui/separator';
+import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import SettingsLayout from '@/layouts/settings/layout';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-// import { AlertDialogContent } from '@radix-ui/react-alert-dialog';
-// import { AlertDialog, AlertDialogTrigger } from '@radix-ui/react-alert-dialog';
+
+type ProfileForm = {
+    name: string;
+    email: string;
+};
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -22,13 +30,8 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-type ProfileForm = {
-    name: string;
-    email: string;
-};
-
 export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: boolean; status?: string }) {
-    const { auth, success, error: errormassage } = usePage<SharedData>().props as any;
+    const { auth } = usePage<SharedData>().props;
 
     const { data, setData, patch, post, errors, processing, recentlySuccessful } = useForm<Required<ProfileForm>>({
         name: auth.user.name,
@@ -48,10 +51,15 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
         post(route('customer.request'));
     };
 
-    return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Profile settings" />
+    const cleanup = useMobileNavigation();
 
+    const handleLogout = () => {
+        cleanup();
+        router.flushAll();
+    };
+
+    return (
+        <ConditionalLayout breadcrumbs={breadcrumbs} title="Profile settings">
             <SettingsLayout>
                 <div className="space-y-6">
                     <HeadingSmall title="Profile information" description="Update your name and email address" />
@@ -74,7 +82,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="email">Email</Label>
+                            <Label htmlFor="email">Email address</Label>
 
                             <Input
                                 id="email"
@@ -127,52 +135,63 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                         </div>
                     </form>
                 </div>
+
                 {auth.user.role == 'customer' && (
-                    <div className="flex w-fit flex-col gap-1.5">
-                        <HeadingSmall title="Want To Be Vendor" description="If You Want To List Your Service Request To Be  A Vendor" />
-                            <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button variant="outline">Show Dialog</Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>    <form onSubmit={vendorRequest}>
-                        {/* Hidden since backend uses Auth::user() */}
-                        <input type="hidden" name="email" value={data.email} />
+                    <>
+                        <Separator />
 
-                        <Button type="submit" disabled={processing}>
-                            {processing ? 'Sending...' : 'Request'}
-                        </Button>
+                        <div className="space-y-6">
+                            <HeadingSmall title="Want to become a vendor?" description="Submit a request to list your services on the platform." />
 
-                        <InputError message={errors.email} className="mt-2" />
-                    </form>
-                    </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-                    </div>
+                            <div className="space-y-4 rounded-lg border border-blue-100 bg-blue-50 p-4 dark:border-blue-200/10 dark:bg-blue-700/10">
+                                <div className="relative space-y-0.5 text-blue-700 dark:text-blue-100">
+                                    <p className="font-medium">Info</p>
+                                    <p className="text-sm">Once approved, you will be able to create and manage your own service listings.</p>
+                                </div>
+
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <Button variant="outline">Request Vendor Access</Button>
+                                    </DialogTrigger>
+
+                                    <DialogContent>
+                                        <DialogTitle>Request Vendor Access</DialogTitle>
+                                        <DialogDescription>
+                                            Submitting this request will notify our team. You will be contacted once your account is approved as a
+                                            vendor.
+                                        </DialogDescription>
+
+                                        <form className="space-y-6" onSubmit={vendorRequest}>
+                                            {/* Hidden field, backend uses Auth::user() */}
+                                            <input type="hidden" name="email" value={data.email} />
+
+                                            <InputError message={errors.email} />
+
+                                            <DialogFooter className="gap-2">
+                                                <DialogClose asChild>
+                                                    <Button variant="secondary">Cancel</Button>
+                                                </DialogClose>
+
+                                                <Button disabled={processing} asChild>
+                                                    <button type="submit">{processing ? 'Submitting...' : 'Submit Request'}</button>
+                                                </Button>
+                                            </DialogFooter>
+                                        </form>
+                                    </DialogContent>
+                                </Dialog>
+                            </div>
+                        </div>
+                    </>
                 )}
-{/* 
-                <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                         <Button variant="outline">Request</Button>
-                    </AlertDialogTrigger>;
-                </AlertDialog> */}
 
-             
-  
+                <Separator />
 
+                <LogoutSection />
+
+                <Separator />
 
                 <DeleteUser />
             </SettingsLayout>
-        </AppLayout>
+        </ConditionalLayout>
     );
 }

@@ -38,6 +38,8 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
 
             $table->timestamps();
+            // indexing in query
+            $table->index(['title', 'connection_type', 'posted_date']);
         });
     }
 
