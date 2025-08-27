@@ -10,8 +10,8 @@ import { Title, Meta, Link } from "react-head";
  
 function home() {
     const { homePage , seo : seodata  } = usePage<PageProps>().props;
-    // console.log(seo[0])
     const seo = seodata[0].seo; 
+    console.log(seo)
     // console.log(JSON.stringify(seo.keywords))
    
     console.log(seo.keywords.map((k, index)=>k))
@@ -24,7 +24,7 @@ function home() {
          <Title>{seo.title}</Title>
       <Meta name="description" content={seo.description} />
       
-      <Meta name="keywords" content={seo.keywords.map((k, index)=>k)} />
+      <Meta name="keywords" content={seo.keywords?.length ? seo.keywords.join(', ') :"NetNest, ISP, CMS"} />
       <Meta property="og:title" content={seo.title} />
       <Meta property="og:description" content={seo.description} />
       {/* <Meta property="og:image" content={seo.image} /> */}

@@ -87,6 +87,6 @@ class SubmissionController extends Controller
 
         $vendor->update($validated);
 
-        return redirect()->route('vendor.submissions.index')->with('success', 'Vendor updated successfully.');
+        return redirect()->route('submission.index')->with('success', 'Vendor updated successfully.');
     }
 }
