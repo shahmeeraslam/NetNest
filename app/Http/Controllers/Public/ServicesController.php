@@ -6,6 +6,8 @@ use App\Models\Vendor;
 use App\Models\VendorService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
+
 
 class ServicesController
 {
@@ -70,12 +72,22 @@ class ServicesController
         ]);
     }
 
-    public function show($slug)
-    {
-        $vendor = VendorService::where('slug', $slug)->firstOrFail();
+  public function show($slug)
+{
+    $vendorService = VendorService::with('user')->where('slug', $slug)->firstOrFail();
 
-        return Inertia::render('Public/DetailedVendorServices', [
-            'vendor' => $vendor
-        ]);
+    $hasSubscription = false;
+    if (Auth::user()) {
+        $hasSubscription = \App\Models\CustomerSubscription::where('user_id', Auth::user()->id)
+            ->where('vendor_service_id', $vendorService->id)
+            ->where('status', 'active')
+            ->exists();
     }
+
+    return Inertia::render('Public/DetailedVendorServices', [
+        'vendor' => $vendorService,
+        'hasSubscription' => $hasSubscription,
+    ]);
+}
+
 }

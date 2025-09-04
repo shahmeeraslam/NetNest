@@ -111,6 +111,7 @@ export default function Navbar({
                     { text: 'Dashboard', href: '/customer/dashboard' },
                     { text: 'Services', href: '/services' },
                     { text: 'Billings', href: '/customer/billing' },
+                    { text: 'Chat', href: '/Public/Chat' },
                     { text: 'Subscription ', href: '/customer/subscription-management' },
                     // { text: 'Support', href: '/customer/support' },
                 ];

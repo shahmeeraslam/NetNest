@@ -14,8 +14,8 @@ export default function Chat({ userId, receiverId }: { userId: number; receiverI
 
     // Listen for real-time messages
     echo.private(`chat.${userId}.${receiverId}`).listen("MessageSent", (e: any) => {
-      setMessages((prev) => [...prev, e.message]);
-    });
+  setMessages((prev) => [...prev, e]);
+});
 
     // Cleanup on unmount
     return () => {

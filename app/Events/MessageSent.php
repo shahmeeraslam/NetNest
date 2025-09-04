@@ -23,10 +23,27 @@ class MessageSent implements ShouldBroadcast
     }
 
     
-    public function broadcastOn(): array
-    {
-        return [
-            new PrivateChannel('chat', $this->message->receiver_id)
-        ];
-    }
+   public function broadcastOn(): array
+{
+    $senderId = $this->message->sender_id;
+    $receiverId = $this->message->receiver_id;
+
+    // Both sender and receiver should listen to the same channel
+    return [
+        new PrivateChannel("chat.{$senderId}.{$receiverId}"),
+        new PrivateChannel("chat.{$receiverId}.{$senderId}"),
+    ];
+}
+
+public function broadcastWith()
+{
+    return [
+        'id' => $this->message->id,
+        'sender_id' => $this->message->sender_id,
+        'receiver_id' => $this->message->receiver_id,
+        'message' => $this->message->message,
+        'created_at' => $this->message->created_at->toDateTimeString(),
+    ];
+}
+
 }

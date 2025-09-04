@@ -26,11 +26,14 @@ Route::middleware(['auth', 'redirect.role'])->get('/dashboard', fn() => null)->n
 
 
 use App\Http\Controllers\ChatController;
-
+// Chat routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/chat/{receiverId?}', [\App\Http\Controllers\ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat/messages/{userId}', [\App\Http\Controllers\ChatController::class, 'getMessage'])->name('chat.messages');
     Route::post('/chat/send', [\App\Http\Controllers\ChatController::class, 'sendMessage'])->name('chat.send');
-    Route::get('/chat/messages/{userId}', [\App\Http\Controllers\ChatController::class, 'getMessage'])->name('chat.get');
+
+    // From subscription
+    Route::get('/chat/subscription/{subscriptionId}', [\App\Http\Controllers\ChatController::class, 'openFromSubscription'])->name('chat.subscription');
 });
 
 // ---------------------------

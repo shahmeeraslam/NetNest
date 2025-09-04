@@ -144,6 +144,9 @@ function Navigation() {
                             </NavigationMenuLink>
                         </NavigationMenuItem>
                         <NavigationMenuItem>
+                        
+                        </NavigationMenuItem>
+                        <NavigationMenuItem>
                             <NavigationMenuLink className={navigationMenuTriggerStyle()} asChild>
                                 <Link href="/billing">Billings</Link>
                             </NavigationMenuLink>

@@ -16,13 +16,25 @@ class ChatController extends Controller
     // {
     //     return Inertia::render('Public/Chat');
     // }
-public function index($receiverId = null)
+
+public function openFromSubscription($subscriptionId)
 {
+    $receiverId = Message::pluck('receiver_id')->get();
+    $subscription = \App\Models\CustomerSubscription::with('vendorService.vendor')->findOrFail($subscriptionId);
+    if (Auth::user()->isCustomer()) {
+    $isSubscribed = \App\Models\CustomerSubscription::where('user_id', Auth::id())
+        ->whereHas('vendorService', fn($q) => $q->where('user_id', $receiverId))
+        ->exists();
+
+    abort_if(!$isSubscribed, 403, 'Unauthorized chat access');
+}
+    
     return Inertia::render('Public/Chat', [
         'userId' => Auth::id(),
-        'receiverId' => $receiverId,
+        'receiverId' => $subscription->vendorService->vendor->id, // vendor user_id
     ]);
 }
+
 
     public function sendMessage(Request $req)
     {

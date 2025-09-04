@@ -4,13 +4,15 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Typography } from '@/components/ui/typography';
 import Layout from '@/layouts/layout';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 
 import TransactionDialog from '@/components/customer/transactions/default';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PageProps, VendorService } from '@/types';
 import { BarChartIcon, MapPinIcon, ServerIcon, StarIcon, TrendingUpIcon, UsersIcon } from 'lucide-react';
+import { useState } from 'react';
+import ChatPopup from '@/components/vendor/chatpopup';
 interface Props extends PageProps {
     vendor: VendorService;
 }
@@ -34,8 +36,9 @@ const appUrl = import.meta.env.APP_URL;
 const appName = import.meta.env.APP_NAME;
 
 export default function DetailedVendorServices() {
-    const { vendor } = usePage<PageProps>().props;
+    const { vendor ,hasSubscription , auth} = usePage<PageProps>().props;
     const highlight = getHighlight(vendor.highlight);
+      const [isChatOpen, setIsChatOpen] = useState(false);
 
     return (
         <>
@@ -179,6 +182,8 @@ export default function DetailedVendorServices() {
                                                         payment_method={'COD'}
                                                     />
                                                 </div>
+                                                
+
                                             </TabsContent>
                                         ))}
                                     </Tabs>
@@ -187,6 +192,24 @@ export default function DetailedVendorServices() {
                         </div>
                     </div>
                 </div>
+                     {hasSubscription && (
+                    <>
+                        <button
+                            onClick={() => setIsChatOpen(true)}
+                            className="fixed bottom-6 right-6 bg-blue-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-blue-700"
+                        >
+                            Chat with Vendor
+                        </button>
+
+                        {isChatOpen && (
+                            <ChatPopup
+                            vendorId={vendor.user_id}
+                            customerId={auth.user?.id}
+                                onClose={() => setIsChatOpen(false)}
+                            />
+                        )}
+                    </>
+                )}
             </Layout>
         </>
     );
