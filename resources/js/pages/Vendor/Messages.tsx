@@ -1,23 +1,29 @@
+import { useEffect, useState } from 'react';
 import { usePage } from '@inertiajs/react';
 
-export default function VendorMessages() {
-  const { messages } = usePage().props as any;
+export default function Messages() {
+    const { messages: initialMessages, vendorId } = usePage().props;
+    const [messages, setMessages] = useState(initialMessages);
 
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Messages from Customers</h1>
-      <div className="space-y-4">
-        {messages.map((msg: any) => (
-          <div key={msg.id} className="border rounded-lg p-4 shadow-sm">
-            <p className="font-semibold text-lg">{msg.customer.name}</p>
-            <p className="text-gray-600">{msg.customer.email}</p>
-            <p className="mt-2">{msg.message}</p>
-            <span className="text-xs text-gray-500">
-              {new Date(msg.created_at).toLocaleString()}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+    useEffect(() => {
+        if (!window.Echo) return;
+
+        window.Echo.private(`chat.${vendorId}`)
+            .listen('.MessageSent', (e:any) => {
+                setMessages((prev) => [...prev, e.message]);
+            });
+    }, [vendorId]);
+
+    return (
+        <div className="p-6">
+            <h1 className="text-xl font-bold mb-4">Messages</h1>
+            <div className="space-y-2">
+                {messages.map((msg) => (
+                    <div key={msg.id} className={`p-3 rounded ${msg.sender_id === vendorId ? 'bg-blue-100' : 'bg-gray-100'}`}>
+                        <strong>{msg.sender?.name}:</strong> {msg.message}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
 }

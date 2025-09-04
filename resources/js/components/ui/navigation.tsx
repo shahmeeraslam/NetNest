@@ -4,15 +4,9 @@ import { cn } from '@/lib/utils';
 import { PageProps } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import * as React from 'react';
-import {
-    NavigationMenu,
-    NavigationMenuContent,
-    NavigationMenuItem,
-    NavigationMenuLink,
-    NavigationMenuList,
-    NavigationMenuTrigger,
-    navigationMenuTriggerStyle,
-} from '../ui/navigation-menu';
+import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, navigationMenuTriggerStyle } from '../ui/navigation-menu';
+
+
 
 // Define reusable ListItem
 function ListItem({ className, title, children, ...props }: React.ComponentProps<'a'> & { title: string }) {
@@ -114,23 +108,14 @@ function Navigation() {
                 {userRole === 'vendor' && (
                     <>
                         <NavigationMenuItem>
-                            <NavigationMenuTrigger>Vendor Dashboard</NavigationMenuTrigger>
-                            <NavigationMenuContent>
-                                <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-2">
-                                    <ListItem href="/vendor/assigned-connections" title="Assigned Connections">
-                                        View and manage your assigned customer connections.
-                                    </ListItem>
-                                    <ListItem href="/vendor/services" title="My Services">
-                                        Manage your published internet services.
-                                    </ListItem>
-                                    <ListItem href="/vendor/requests" title="Requests">
-                                        See and respond to customer installation requests.
-                                    </ListItem>
-                                    <ListItem href="/vendor/support" title="Support">
-                                        Assist customers and resolve issues.
-                                    </ListItem>
-                                </ul>
-                            </NavigationMenuContent>
+                            <NavigationMenuLink className={navigationMenuTriggerStyle()} asChild>
+                                <Link href="/messages">Message</Link>
+                            </NavigationMenuLink>
+                        </NavigationMenuItem>
+                        <NavigationMenuItem>
+                            <NavigationMenuLink className={navigationMenuTriggerStyle()} asChild>
+                               
+                            </NavigationMenuLink>
                         </NavigationMenuItem>
                     </>
                 )}
@@ -143,9 +128,7 @@ function Navigation() {
                                 <Link href="/services">Services</Link>
                             </NavigationMenuLink>
                         </NavigationMenuItem>
-                        <NavigationMenuItem>
-                        
-                        </NavigationMenuItem>
+                        <NavigationMenuItem></NavigationMenuItem>
                         <NavigationMenuItem>
                             <NavigationMenuLink className={navigationMenuTriggerStyle()} asChild>
                                 <Link href="/billing">Billings</Link>

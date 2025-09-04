@@ -14,13 +14,10 @@ class DashboardController
 {
   public function index()
   {
-    // $unreadCount = Message::where('vendor_id' ,  Auth::user()->id)->
-    // where('is_read' , false)->count();
+
     $vendorId = Auth::id();
     $service = VendorService::where('user_id', $vendorId)->first();
-    // $message = Message::with('customer')
-    // ->where('vendor_id' , Auth::user()->id)
-    // ->latest()->get();
+   
     if (!$service) {
       return Inertia::render('Vendor/Submission');
     }
@@ -75,9 +72,7 @@ class DashboardController
         'cancelledCustomers' => $cancelledCustomers,
         'recentSubscribers' => $recentSubscribers,
         'chartData' => $chartData,
-        'service' => $service,
-        // 'message' => $message,
-        // 'unreadcount' => $unreadCount
+        'service' => $service
       ]
     ]);
   }
