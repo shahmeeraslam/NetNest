@@ -1,29 +1,14 @@
-import { useEffect, useState } from 'react';
-import { usePage } from '@inertiajs/react';
+import VendorMessages from '@/components/vendor/VendorMessage';
+import Layout from '@/layouts/layout';
 
-export default function Messages() {
-    const { messages: initialMessages, vendorId } = usePage().props;
-    const [messages, setMessages] = useState(initialMessages);
+function Messages() {
+  return (
+<Layout clasname='w-full' title='Vendor Message '>
 
-    useEffect(() => {
-        if (!window.Echo) return;
+  <VendorMessages  />
+</Layout>
 
-        window.Echo.private(`chat.${vendorId}`)
-            .listen('.MessageSent', (e:any) => {
-                setMessages((prev) => [...prev, e.message]);
-            });
-    }, [vendorId]);
-
-    return (
-        <div className="p-6">
-            <h1 className="text-xl font-bold mb-4">Messages</h1>
-            <div className="space-y-2">
-                {messages.map((msg) => (
-                    <div key={msg.id} className={`p-3 rounded ${msg.sender_id === vendorId ? 'bg-blue-100' : 'bg-gray-100'}`}>
-                        <strong>{msg.sender?.name}:</strong> {msg.message}
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
+  );
 }
+
+export default Messages;

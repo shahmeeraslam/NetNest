@@ -69,15 +69,11 @@ Route::middleware(['auth', 'verified', 'role:vendor'])->group(function () {
     Route::get('/installation-requests', [\App\Http\Controllers\Vendor\InstallationRequestController::class, 'requests'])->name('vendor.installation');
     Route::get('/support', [\App\Http\Controllers\Vendor\SupportTicketController::class, 'index'])->name('vendor.support');
     // Route::get('/profile', [\App\Http\Controllers\Vendor\ProfileController::class, 'index'])->name('vendor.profile');
-   Route::get('/messages', [\App\Http\Controllers\Vendor\CustomerMessage::class, 'index'])
-        ->name('messages');
-
-    // API
-   Route::get('/threads', [\App\Http\Controllers\Vendor\CustomerMessage::class, 'threads']);
-    Route::get('/conversations/{customer}', [\App\Http\Controllers\Vendor\CustomerMessage::class, 'conversation']);
-    Route::post('/messages', [\App\Http\Controllers\Vendor\CustomerMessage::class, 'send']);
-    Route::post('/conversations/{customer}/read', [\App\Http\Controllers\Vendor\CustomerMessage::class, 'markAsRead']);
-
+       Route::get('/messages', [\App\Http\Controllers\Vendor\CustomerMessage::class, 'index'])->name('vendor.messages');
+    Route::get('/threads', [\App\Http\Controllers\Vendor\CustomerMessage::class, 'threads'])->name('vendor.threads');
+    Route::get('/conversations/{customerId}', [\App\Http\Controllers\Vendor\CustomerMessage::class, 'conversation'])->name('vendor.conversation');
+    Route::post('/messages', [\App\Http\Controllers\Vendor\CustomerMessage::class, 'send'])->name('vendor.messages.send');
+    Route::post('/conversations/{customerId}/read', [\App\Http\Controllers\Vendor\CustomerMessage::class, 'markAsRead'])->name('vendor.conversation.read');
 });
 
 // ---------------------------

@@ -58,11 +58,11 @@ public function openFromSubscription($subscriptionId)
     {
         $messages = message::where(function ($q) use ($userId) {
             $q->where('sender_id', Auth::id())
-                ->where('receiver_id', 1);
+                ->where('receiver_id', $userId);
         })
             ->orwhere(function ($q) use ($userId) {
                 $q->where('sender_id', $userId)
-                    ->where('receiver_id',1);
+                    ->where('receiver_id', Auth::id());
             })
             ->orderBy('created_at', 'asc')
             ->get();

@@ -29,7 +29,7 @@
     "dependencies": {
         "@excalidraw/excalidraw": "^0.18.0",
         "@headlessui/react": "^2.2.0",
-        "@inertiajs/react": "^2.0.0",
+        "@inertiajs/react": "^2.1.4",
         "@lexical/code": "^0.33.1",
         "@lexical/file": "^0.33.1",
         "@lexical/hashtag": "^0.33.1",
@@ -73,6 +73,7 @@
         "@types/react": "^19.0.3",
         "@types/react-dom": "^19.0.2",
         "@vitejs/plugin-react": "^4.6.0",
+        "axios": "^1.11.0",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "cmdk": "^1.1.1",

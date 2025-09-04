@@ -24,7 +24,9 @@ createServer((page) =>
                 });
             /* eslint-enable */
 
-            return <App {...props} />;
+            return ( 
+                    <App {...props} />
+            );
         },
     }),
 );

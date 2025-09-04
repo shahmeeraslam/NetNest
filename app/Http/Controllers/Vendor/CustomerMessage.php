@@ -62,16 +62,22 @@ class CustomerMessage extends Controller
 
     // Vendor's message threads
     public function threads()
-    {
-        $vendorId = Auth::id();
+    {$vendorId = Auth::id();
 
-        $threads = Message::with('sender:id,name')
-            ->where('receiver_id', $vendorId)
-            ->latest()
-            ->get()
-            ->groupBy('sender_id');
+    // Get the latest message from each conversation
+    $threads = Message::with('sender:id,name')
+        ->where('receiver_id', $vendorId)
+        ->orWhere('sender_id', $vendorId)
+        ->latest()
+        ->get()
+        ->groupBy(function($message) use ($vendorId) {
+            return $message->sender_id == $vendorId ? $message->receiver_id : $message->sender_id;
+        })
+        ->map(function($messages) {
+            return $messages->first(); // Get only the latest message from each conversation
+        });
 
-        return response()->json($threads);
+    return response()->json($threads);
     }
 
 }
