@@ -10,6 +10,7 @@ require __DIR__ . '/auth.php';
 Route::get('/', [\App\Http\Controllers\Public\HomeController::class, 'index'])->name('home');
 Route::get('/about', [\App\Http\Controllers\Public\AboutController::class, 'index'])->name('about');
 Route::get('/contact', fn() => Inertia::render('Public/Contact'))->name('contact');
+Route::get('/chat', fn() => Inertia::render('Public/Chat'))->name('chat');
 // Route::get('/vendors', fn() => Inertia::render('Public/Vendors'))->name('vendors');
 
 
@@ -23,12 +24,22 @@ Route::get('/services/{slug}', [\App\Http\Controllers\Public\ServicesController:
 // Auth routes (already in `auth.php`) 
 Route::middleware(['auth', 'redirect.role'])->get('/dashboard', fn() => null)->name('dashboard');
 
+
+use App\Http\Controllers\ChatController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/chat/{receiverId?}', [\App\Http\Controllers\ChatController::class, 'index'])->name('chat.index');
+    Route::post('/chat/send', [\App\Http\Controllers\ChatController::class, 'sendMessage'])->name('chat.send');
+    Route::get('/chat/messages/{userId}', [\App\Http\Controllers\ChatController::class, 'getMessage'])->name('chat.get');
+});
+
 // ---------------------------
 // Customer Routes
 // ---------------------------
 
 Route::middleware(['auth', 'verified', 'role:customer'])->group(function () {
     // Route::get('/dashboard', [\App\Http\Controllers\Customer\DashboardController::class, 'index'])->name('customer.dashboard');
+
 
     // Route::get('/services', [\App\Http\Controllers\Customer\ConnectionController::class, 'services'])->name('customer.services');
     Route::get('/billing', [\App\Http\Controllers\Customer\BillingController::class, 'index'])->name('customer.billing');
@@ -41,7 +52,7 @@ Route::middleware(['auth', 'verified', 'role:customer'])->group(function () {
     Route::get('/subscription', [\App\Http\Controllers\Customer\SubscriptionController::class, 'index']);
     Route::post('/transaction', [\App\Http\Controllers\Customer\SubscriptionController::class, 'store'])->name('transaction.store');
 
-    // Route::post('/Request', [\App\Http\Controllers\Customer\ProfileController::class, 'VendorRequest'])->name('customer.request');
+    Route::post('/request', [\App\Http\Controllers\Settings\ProfileController::class, 'request'])->name('customer.request');
     // Route::get('/profile', [\App\Http\Controllers\Customer\ProfileController::class, 'index'])->name('customer.profile');
 });
 
@@ -49,7 +60,7 @@ Route::middleware(['auth', 'verified', 'role:customer'])->group(function () {
 // Vendor Routes
 // ---------------------------
 Route::middleware(['auth', 'verified', 'role:vendor'])->group(function () {
-    Route::get('/dashboard', [\App\Http\Controllers\Vendor\DashboardController::class, 'index'])->name('vendor.dashboard');
+    Route::get('/vendor/dashboard', [\App\Http\Controllers\Vendor\DashboardController::class, 'index'])->name('vendor.dashboard');
     Route::resource('/submission', \App\Http\Controllers\Vendor\SubmissionController::class)->only(['index', 'store', 'edit', 'update']);
     Route::get('/assigned-connections', [\App\Http\Controllers\Vendor\InstallationRequestController::class, 'index'])->name('vendor.assigned');
     Route::get('/installation-requests', [\App\Http\Controllers\Vendor\InstallationRequestController::class, 'requests'])->name('vendor.installation');
